@@ -20,8 +20,10 @@ def procurando_hosts():
     if opcao == '1':
      host_ids = input("Pesquise o CD do cliente: ")
      ids = api.host.get({
-        "output": ['host','hostid', 'description'],
+        "output": ['hostid','name'],
         "sortfield": "name",
+        "selectInterfaces": ["interfaceid", "ip"],
+        "selectGroups": "extend",
         "search": {"name": '*' + host_ids + '*'},
         "searchWildcardsEnabled": True
      })
@@ -31,8 +33,8 @@ def procurando_hosts():
         for x in ids:
             with open('hostsids.csv', 'a') as arquivo_csv:
                escrever = csv.writer(arquivo_csv, delimiter=';')
-               escrever.writerow([x['host'],x['hostid'],x['description']])
-            print (x['host'],"-", x['description'])            
+               escrever.writerow([x['hostid'],x['name'],x['groups'],x['interfaces']])
+            print (x)            
      else:
         print("***Hosts não encontrado***")
     
