@@ -47,16 +47,22 @@ def procurando_hosts():
     elif opcao == '2':
    
      itens = api.item.get({"output": "extend", "monitored": "true", "filter": {"state": 1}})
-     print("===============================================================================================")
-     print("ID   ITEMID        NOME           ERRO")
-     print("===============================================================================================")
-
+     
      for x in itens:
             print("HOSTID: {},ITEMID: {},KEY: {},NOME: {},ERROR:{}".format(x["hostid"], x["itemid"], x["key_"], x["name"],x["error"]))
         # print(itens)
-     print("============================================")
+     print()
      print("Total de itens não suportados: ", len(itens))
-     print("==")
+     opcao = input("\nDeseja gerar relatorio em arquivo? [s/n]")
+     if opcao == 's' or opcao == 'S':
+            with open('itens.csv', 'w', newline='') as arquivo_csv:
+               fieldnames = ['Hostid', 'ItemID', 'Key', 'Nome', 'Error']
+               escrever = csv.DictWriter(arquivo_csv, delimiter=';', fieldnames=fieldnames)
+               escrever.writeheader()
+            for x in itens:
+               with open('itens.csv', 'a') as arquivo_csv:
+                escrever = csv.writer(arquivo_csv, delimiter=';')
+                escrever.writerow([x['hostid'],x['itemid'],x['key_'],x['name'],x['error']])
 
 print()
 menu()
