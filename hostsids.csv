@@ -1,0 +1,4 @@
+Hostid;Name;Grupo;Interfaces
+10084;Zabbix server;[{'groupid': '4', 'name': 'Zabbix servers'}];[{'interfaceid': '1', 'ip': '127.0.0.1'}]
+10443;Zabbix server 2;[{'groupid': '4', 'name': 'Zabbix servers'}];[{'interfaceid': '10', 'ip': '127.0.0.1'}]
+10444;zabbix;[{'groupid': '19', 'name': 'linuxxx'}];[{'interfaceid': '11', 'ip': '192.168.0.1'}]
