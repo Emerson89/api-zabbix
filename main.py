@@ -1,3 +1,4 @@
+from fileinput import filename
 from zabbix_api import ZabbixAPI,Already_Exists
 import sys
 import csv
@@ -21,21 +22,26 @@ class Monit(ZabbixAPI):
         "output": ['hostid','name'],
         "selectInterfaces": ["interfaceid", "ip"],
         "selectGroups": "extend",
+        "selectParentTemplates": ["templateid", "name"]
      })
      if ids:
         for x in ids:
          print (x)
         print()
-        opcao = input("\nDeseja gerar relatorio em arquivo? [s/n]")
-        if opcao == 's' or opcao == 'S':
-            with open('hostsids.csv', 'w', newline='') as arquivo_csv:
-               fieldnames = ['Hostid', 'Name', 'Grupo', 'Interfaces']
+        opcao = input("\nDeseja gerar relatorio em arquivo? [S/N]").upper()
+        if opcao == 'S':
+            namefile = input("Digite o nome do arquivo em .csv: ")
+            with open(namefile, 'w', newline='') as arquivo_csv:
+               fieldnames = ['Hostid', 'Name', 'Grupo', 'Interfaces', 'Template']
                escrever = csv.DictWriter(arquivo_csv, delimiter=';', fieldnames=fieldnames)
-               escrever.writeheader()
+               escrever.writeheader()    
             for x in ids:
-               with open('hosts.csv', 'a') as arquivo_csv:
-                escrever = csv.writer(arquivo_csv, delimiter=';')
-                escrever.writerow([x['hostid'],x['name'],x['groups'],x['interfaces']])
+               for grupos in x['groups']:
+                  for interface in x['interfaces']:
+                     for template in x['parentTemplates']:
+                      with open(namefile, 'a') as arquivo_csv:
+                       escrever = csv.writer(arquivo_csv, delimiter=';')
+                       escrever.writerow([x['hostid'],x['name'],grupos['name'],interface['ip'],template['name']])
      else:
         print("***Hosts não encontrado***")
      self.zapi.logout()
@@ -47,14 +53,15 @@ class Monit(ZabbixAPI):
             print("HOSTID: {},ITEMID: {},KEY: {},NOME: {},ERROR:{}".format(x["hostid"], x["itemid"], x["key_"], x["name"],x["error"]))
      print()
      print("Total de itens não suportados: ", len(itens))
-     opcao = input("\nDeseja gerar relatorio em arquivo? [s/n]")
-     if opcao == 's' or opcao == 'S':
-            with open('itens.csv', 'w', newline='') as arquivo_csv:
+     opcao = input("\nDeseja gerar relatorio em arquivo? [S/N]").upper()
+     if opcao == 'S':
+            itemfile = input("Digite o nome do arquivo em .csv: ")
+            with open(itemfile, 'w', newline='') as arquivo_csv:
                fieldnames = ['Hostid', 'ItemID', 'Key', 'Nome', 'Error']
                escrever = csv.DictWriter(arquivo_csv, delimiter=';', fieldnames=fieldnames)
                escrever.writeheader()
             for x in itens:
-               with open('itens.csv', 'a') as arquivo_csv:
+               with open(itemfile, 'a') as arquivo_csv:
                 escrever = csv.writer(arquivo_csv, delimiter=';')
                 escrever.writerow([x['hostid'],x['itemid'],x['key_'],x['name'],x['error']])
      self.zapi.logout()
