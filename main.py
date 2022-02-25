@@ -1,4 +1,4 @@
-from fileinput import filename
+from os import getgroups
 from zabbix_api import ZabbixAPI,Already_Exists
 import sys
 import csv
@@ -17,19 +17,42 @@ class Monit(ZabbixAPI):
   
    return zapi
 
-  def procura_hosts(self):
+  def procura_groups(self):
+     geral = self.zapi.hostgroup.get({
+        "output": ['name'],
+        "monitored_hosts": "extend",
+     })
+     print("***Grupos encontrados***")
+     print()
+     for x in geral:
+        print(x['name'])
+     print()   
+     getgrupos = input("Digite o nome do grupo que deseja pesquisar: ")
+     grupos = self.zapi.hostgroup.get({
+        "output": 'extend',
+        "filter": { "name": [getgrupos]},
+        "selectHosts": ["name","host"],
+        "monitored_hosts": "extend",
+     })
+     for x in grupos:
+      for idhost in x['groupid']:
+            group_ids = idhost
+            #print(group_ids)
+
      ids = self.zapi.host.get({
         "output": ['hostid','name'],
         "selectInterfaces": ["interfaceid", "ip"],
         "selectGroups": "extend",
-        "selectParentTemplates": ["templateid", "name"]
+        "selectParentTemplates": ["templateid", "name"],
+        "groupids": [group_ids],
      })
-     if ids:
-        for x in ids:
-         print (x)
-        print()
-        opcao = input("\nDeseja gerar relatorio em arquivo? [S/N]").upper()
-        if opcao == 'S':
+     print()
+     print(f'***Hosts encontrados do Grupo {getgrupos}***')
+     print()
+     print(ids)   
+     print()
+     opcao = input("\nDeseja gerar relatorio em arquivo? [S/N]").upper()
+     if opcao == 'S':
             namefile = input("Digite o nome do arquivo em .csv: ")
             with open(namefile, 'w', newline='') as arquivo_csv:
                fieldnames = ['Hostid', 'Name', 'Grupo', 'Interfaces', 'Template']
@@ -39,9 +62,9 @@ class Monit(ZabbixAPI):
                for grupos in x['groups']:
                   for interface in x['interfaces']:
                      for template in x['parentTemplates']:
-                      with open(namefile, 'a') as arquivo_csv:
-                       escrever = csv.writer(arquivo_csv, delimiter=';')
-                       escrever.writerow([x['hostid'],x['name'],grupos['name'],interface['ip'],template['name']])
+                         with open(namefile, 'a') as arquivo_csv:
+                          escrever = csv.writer(arquivo_csv, delimiter=';')
+                          escrever.writerow([x['hostid'],x['name'],grupos['name'],interface['ip'],template['name']])
      else:
         print("***Hosts não encontrado***")
      self.zapi.logout()
