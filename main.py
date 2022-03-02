@@ -1,6 +1,5 @@
 from os import getgroups
 from zabbix_api import ZabbixAPI,Already_Exists
-import sys
 import csv
 
 class Monit(ZabbixAPI):
@@ -35,10 +34,8 @@ class Monit(ZabbixAPI):
         "monitored_hosts": "extend",
      })
      for x in grupos:
-      for idhost in x['groupid']:
-            group_ids = idhost
-            #print(group_ids)
-
+      group_ids = x['groupid']
+       
      ids = self.zapi.host.get({
         "output": ['hostid','name'],
         "selectInterfaces": ["interfaceid", "ip"],
@@ -55,7 +52,7 @@ class Monit(ZabbixAPI):
      if opcao == 'S':
             namefile = input("Digite o nome do arquivo em .csv: ")
             with open(namefile, 'w', newline='') as arquivo_csv:
-               fieldnames = ['Hostid', 'Name', 'Grupo', 'Interfaces', 'Template']
+               fieldnames = ['Hostid', 'Name', 'Grupo', 'Interfaces', 'Macros', 'Template']
                escrever = csv.DictWriter(arquivo_csv, delimiter=';', fieldnames=fieldnames)
                escrever.writeheader()    
             for x in ids:
