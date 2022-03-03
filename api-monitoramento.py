@@ -4,7 +4,7 @@ from main import Monit
 import getpass
 import sys
 
-api = Monit("http://10.200.161.12/zabbix","emerson.cesario","Msofeldb#2")
+api = Monit("http://127.0.0.1/zabbix","","")
 
 def menu():
     print("---- Menu opções Hosts ----")
