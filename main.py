@@ -32,16 +32,18 @@ class Monit(ZabbixAPI):
         "filter": { "name": [getgrupos]},
         "selectHosts": ["name","host"],
         "monitored_hosts": "extend",
-     })
-     for x in grupos:
-      group_ids = x['groupid']
+     })[0]['groupid']
+     
+     #print(grupos)
+     #for x in grupos
+     # group_ids = x['groupid']
        
      ids = self.zapi.host.get({
         "output": ['hostid','name'],
         "selectInterfaces": ["interfaceid", "ip"],
         "selectGroups": "extend",
         "selectParentTemplates": ["templateid", "name"],
-        "groupids": [group_ids],
+        "groupids": [grupos],
         "filter": { "status": [0]}
      })
      print()
@@ -66,9 +68,14 @@ class Monit(ZabbixAPI):
      #else:
      #   print("***Hosts não encontrado***")
      self.zapi.logout()
-  
+
   def procura_itens(self):
-     itens = self.zapi.item.get({"output": "extend", "monitored": "true", "filter": {"state": 1}})
+     itens = self.zapi.item.get({
+            "output": "extend", 
+            "monitored": "true",
+            #"groupids": [self.procura_groups(getgrupos)],
+            "filter": {"state": 1}
+            })
      
      for x in itens:
             print("HOSTID: {},ITEMID: {},KEY: {},NOME: {},ERROR:{}".format(x["hostid"], x["itemid"], x["key_"], x["name"],x["error"]))
@@ -125,3 +132,7 @@ class Monit(ZabbixAPI):
          file_csv = csv.reader(file, delimiter=';')
          for [nome,senha] in file_csv:
             self.create_user(user=nome,password=senha)
+  
+  #def historyget(self, grupo):
+  #  groupId = self.zapi.hostgroup.get({"output": "extend", "filter": {"name": grupo}})[0]['groupid']
+  #  print(groupId)
