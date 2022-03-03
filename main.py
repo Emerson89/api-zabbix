@@ -42,6 +42,7 @@ class Monit(ZabbixAPI):
         "selectGroups": "extend",
         "selectParentTemplates": ["templateid", "name"],
         "groupids": [group_ids],
+        "filter": { "status": [0]}
      })
      print()
      print(f'***Hosts encontrados do Grupo {getgrupos}***')
@@ -62,8 +63,8 @@ class Monit(ZabbixAPI):
                          with open(namefile, 'a') as arquivo_csv:
                           escrever = csv.writer(arquivo_csv, delimiter=';')
                           escrever.writerow([x['hostid'],x['name'],grupos['name'],interface['ip'],template['name']])
-     else:
-        print("***Hosts não encontrado***")
+     #else:
+     #   print("***Hosts não encontrado***")
      self.zapi.logout()
   
   def procura_itens(self):
