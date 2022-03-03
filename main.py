@@ -50,7 +50,7 @@ class Monit(ZabbixAPI):
      print()
      opcao = input("\nDeseja gerar relatorio em arquivo? [S/N]").upper()
      if opcao == 'S':
-            namefile = input("Digite o nome do arquivo em .csv: ")
+            namefile = input("Digite o nome do arquivo: ") + ".csv"
             with open(namefile, 'w', newline='') as arquivo_csv:
                fieldnames = ['Hostid', 'Name', 'Grupo', 'Interfaces', 'Macros', 'Template']
                escrever = csv.DictWriter(arquivo_csv, delimiter=';', fieldnames=fieldnames)
@@ -75,7 +75,7 @@ class Monit(ZabbixAPI):
      print("Total de itens não suportados: ", len(itens))
      opcao = input("\nDeseja gerar relatorio em arquivo? [S/N]").upper()
      if opcao == 'S':
-            itemfile = input("Digite o nome do arquivo em .csv: ")
+            itemfile = input("Digite o nome do arquivo: ") + ".csv"
             with open(itemfile, 'w', newline='') as arquivo_csv:
                fieldnames = ['Hostid', 'ItemID', 'Key', 'Nome', 'Error']
                escrever = csv.DictWriter(arquivo_csv, delimiter=';', fieldnames=fieldnames)
