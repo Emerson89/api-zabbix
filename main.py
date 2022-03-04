@@ -1,5 +1,3 @@
-from os import getgroups
-from tokenize import group
 from zabbix_api import ZabbixAPI,Already_Exists
 import csv
 
@@ -52,11 +50,11 @@ class Monit(ZabbixAPI):
      print()
      print(ids)   
      print()
-     opcao = input("Deseja gerar relatorio em arquivo teste? [S/N]").upper()
+     opcao = input("Deseja gerar relatorio em arquivo? [S/N]").upper()
      if opcao == 'S':
             namefile = input("Digite o nome do arquivo: ") + ".csv"
             with open(namefile, 'w', newline='') as arquivo_csv:
-               fieldnames = ['Hostid', 'Name', 'Grupo', 'Interfaces', 'Macros', 'Template']
+               fieldnames = ['Hostid', 'Name', 'Grupo', 'Interfaces', 'Template']
                escrever = csv.DictWriter(arquivo_csv, delimiter=';', fieldnames=fieldnames)
                escrever.writeheader()    
             for x in ids:

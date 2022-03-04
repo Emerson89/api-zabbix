@@ -16,7 +16,7 @@ def menu():
     print("---- Menu opções api-monitoramento ----")
     print("[1] - Get hosts por grupo")
     print("[2] - Get Itens não suportados por grupo")
-    print("[3] - Create users")
+    print("[3] - Criar users")
     print("[4] - Remove ou desabilita hosts com errors")
     print("[5] - Exit")
 
