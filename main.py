@@ -148,6 +148,33 @@ class Monit(ZabbixAPI):
      except Exception as err:
         print("***ATENCAO***Para cadastro do Hosts obrigatório criar o arquivo users.csv")
   
-  #def historyget(self, grupo):
-  #  groupId = self.zapi.hostgroup.get({"output": "extend", "filter": {"name": grupo}})[0]['groupid']
-  #  print(groupId)
+  def get_hosts_errors(self):
+     
+     geral = self.zapi.host.get({
+        "output": ['hostid','name', 'error'],
+        "selectGroups": "extend",
+        "filter": { "available": [2]} 
+     })
+     if len(geral) > 0:  
+      print("***Host(s) encontrado(s) com error(s)***")
+      for x in geral:
+        print("HOSTID: {}, NOME: {}, ERROR: {}".format(x['hostid'],x['name'],x['error']))
+     
+      print()
+      print("Escolha uma opção:\n1 - Desabilitar host(s)?\n2 - Remover host(s)?")
+      opcao = input()
+      if opcao == '1':
+         for x in geral:
+            self.zapi.host.update({
+                  "hostid": x['hostid'],
+                  "status": 1
+            })
+         print('Host(s) desabilitado(s)')
+      elif opcao == '2':
+         for x in geral:
+          r = x['hostid']
+          self.zapi.host.delete([r])
+         
+         print('Host(s) removido(s)')
+     else:
+        print("***Nenhum host(s) encontrado(s) com errors***")
