@@ -12,7 +12,7 @@ import sys
 
 def menu():
   while True:
-    print("---- Menu opções Hosts ----")
+    print("---- Menu opções api-monitoramento ----")
     print("[1] - Get hosts por grupo")
     print("[2] - Get Itens não suportados por grupo")
     print("[3] - Create users")

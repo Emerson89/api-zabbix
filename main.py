@@ -36,12 +36,8 @@ class Monit(ZabbixAPI):
      })[0]['groupid']
      
      print()
-     print(f'***Hosts encontrados do Grupo {getgrupos}***')
-     print()
-     #print(grupos)
-     #for x in grupos:
-      #group_ids = x['groupid']
-     #self.zapi.logout()
+     #print(f'***Hosts encontrados do Grupo {getgrupos}***')
+     #print()
      return grupos
 
   def get_hosts(self):       
@@ -56,7 +52,7 @@ class Monit(ZabbixAPI):
      print()
      print(ids)   
      print()
-     opcao = input("\nDeseja gerar relatorio em arquivo teste? [S/N]").upper()
+     opcao = input("Deseja gerar relatorio em arquivo teste? [S/N]").upper()
      if opcao == 'S':
             namefile = input("Digite o nome do arquivo: ") + ".csv"
             with open(namefile, 'w', newline='') as arquivo_csv:
@@ -84,10 +80,11 @@ class Monit(ZabbixAPI):
      
      for x in itens:
             print("HOSTID: {},ITEMID: {},KEY: {},NOME: {},ERROR:{}".format(x["hostid"],x["itemid"], x["key_"], x["name"],x["error"]))
-     print()
-     print("Total de itens não suportados: ", len(itens))
-     opcao = input("\nDeseja gerar relatorio em arquivo? [S/N]").upper()
-     if opcao == 'S':
+     if len(itens) > 0:
+      print()
+      print("Total de itens não suportados: ", len(itens))
+      opcao = input("Deseja gerar relatorio em arquivo? [S/N]").upper()
+      if opcao == 'S':
             itemfile = input("Digite o nome do arquivo: ") + ".csv"
             with open(itemfile, 'w', newline='') as arquivo_csv:
                fieldnames = ['Hostid', 'ItemID', 'Key', 'Nome', 'Error']
@@ -97,6 +94,15 @@ class Monit(ZabbixAPI):
                with open(itemfile, 'a') as arquivo_csv:
                 escrever = csv.writer(arquivo_csv, delimiter=';')
                 escrever.writerow([x['hostid'],x['itemid'],x['key_'],x['name'],x['error']])
+      opcao = input("Deseja desabilitar os itens? (S/N): ").upper()
+      if opcao == 'S':
+            for x in itens:
+               self.zapi.item.update({
+                  "itemid": x['itemid'],
+                  "status": 1
+               })
+     else:
+        print("Não há itens não suportados para este grupo de hosts")
      #self.zapi.logout()
 
   def procurando_groupusers(self):
