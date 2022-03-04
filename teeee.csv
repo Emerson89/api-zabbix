@@ -1,7 +1,0 @@
-Hostid;ItemID;Key;Nome;Error
-10084;25367;zabbix[process,ipmi manager,avg,busy];Zabbix server: Utilization of ipmi manager internal processes, in %;"No ""ipmi manager"" processes started."
-10084;23261;zabbix[process,ipmi poller,avg,busy];Zabbix server: Utilization of ipmi poller data collector processes, in %;"No ""ipmi poller"" processes started."
-10084;23262;zabbix[process,java poller,avg,busy];Zabbix server: Utilization of java poller data collector processes, in %;"No ""java poller"" processes started."
-10084;23267;zabbix[process,snmp trapper,avg,busy];Zabbix server: Utilization of snmp trapper data collector processes, in %;"No ""snmp trapper"" processes started."
-10084;23328;zabbix[process,vmware collector,avg,busy];Zabbix server: Utilization of vmware data collector processes, in %;"No ""vmware collector"" processes started."
-10084;23635;zabbix[vmware,buffer,pused];Zabbix server: VMware cache, % used;"No ""vmware collector"" processes started."
