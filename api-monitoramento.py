@@ -13,11 +13,11 @@ api = Monit("http://192.168.33.10","Admin","zabbix")
 
 def menu():
   while True:
-    print("---- Menu opções api-monitoramento ----")
+    print("---- Menu opções monitoramento ----")
     print("[1] - Get hosts por grupo")
     print("[2] - Get Itens não suportados por grupo")
     print("[3] - Criar users")
-    print("[4] - Remove ou desabilita hosts com errors")
+    print("[4] - Remove ou desabilita hosts com errors por grupo")
     print("[5] - Exit")
 
     opcao = input("Select an option: ")

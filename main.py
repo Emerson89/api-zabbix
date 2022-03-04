@@ -20,7 +20,7 @@ class Monit(ZabbixAPI):
         "output": ['name'],
         "monitored_hosts": "extend",
      })
-     print("***Grupos encontrados***")
+     print("***Grupo(s) de Host(s) encontrado(s)***")
      print()
      for x in geral:
         print(x['name'])
@@ -118,7 +118,7 @@ class Monit(ZabbixAPI):
             print (x['name'],"-", x['usrgrpid'])
         print()            
     else:
-        print("***GroupsUsers não encontrados***")
+        print("***Grupo(s) de Usuário(s) não encontrado(s)***")
         print()
 
   def create_user(self, user, password):
@@ -151,7 +151,8 @@ class Monit(ZabbixAPI):
      geral = self.zapi.host.get({
         "output": ['hostid','name', 'error'],
         "selectGroups": "extend",
-        "filter": { "available": [2]} 
+        "filter": { "available": [2]},
+        "groupids": [self.procura_groups(grupos='')],
      })
      if len(geral) > 0:  
       print("***Host(s) encontrado(s) com error(s)***")
