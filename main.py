@@ -1,4 +1,5 @@
 from os import getgroups
+from tokenize import group
 from zabbix_api import ZabbixAPI,Already_Exists
 import csv
 
@@ -16,7 +17,7 @@ class Monit(ZabbixAPI):
   
    return zapi
 
-  def procura_groups(self):
+  def procura_groups(self, grupos):
      geral = self.zapi.hostgroup.get({
         "output": ['name'],
         "monitored_hosts": "extend",
@@ -34,24 +35,28 @@ class Monit(ZabbixAPI):
         "monitored_hosts": "extend",
      })[0]['groupid']
      
+     print()
+     print(f'***Hosts encontrados do Grupo {getgrupos}***')
+     print()
      #print(grupos)
-     #for x in grupos
-     # group_ids = x['groupid']
-       
+     #for x in grupos:
+      #group_ids = x['groupid']
+     #self.zapi.logout()
+     return grupos
+
+  def get_hosts(self):       
      ids = self.zapi.host.get({
         "output": ['hostid','name'],
         "selectInterfaces": ["interfaceid", "ip"],
         "selectGroups": "extend",
         "selectParentTemplates": ["templateid", "name"],
-        "groupids": [grupos],
+        "groupids": [self.procura_groups(grupos='')],
         "filter": { "status": [0]}
      })
      print()
-     print(f'***Hosts encontrados do Grupo {getgrupos}***')
-     print()
      print(ids)   
      print()
-     opcao = input("\nDeseja gerar relatorio em arquivo? [S/N]").upper()
+     opcao = input("\nDeseja gerar relatorio em arquivo teste? [S/N]").upper()
      if opcao == 'S':
             namefile = input("Digite o nome do arquivo: ") + ".csv"
             with open(namefile, 'w', newline='') as arquivo_csv:
@@ -67,18 +72,18 @@ class Monit(ZabbixAPI):
                           escrever.writerow([x['hostid'],x['name'],grupos['name'],interface['ip'],template['name']])
      #else:
      #   print("***Hosts não encontrado***")
-     self.zapi.logout()
+     #self.zapi.logout()
 
   def procura_itens(self):
      itens = self.zapi.item.get({
             "output": "extend", 
             "monitored": "true",
-            #"groupids": [self.procura_groups(getgrupos)],
+            "groupids": [self.procura_groups(grupos='')],
             "filter": {"state": 1}
             })
      
      for x in itens:
-            print("HOSTID: {},ITEMID: {},KEY: {},NOME: {},ERROR:{}".format(x["hostid"], x["itemid"], x["key_"], x["name"],x["error"]))
+            print("HOSTID: {},ITEMID: {},KEY: {},NOME: {},ERROR:{}".format(x["hostid"],x["itemid"], x["key_"], x["name"],x["error"]))
      print()
      print("Total de itens não suportados: ", len(itens))
      opcao = input("\nDeseja gerar relatorio em arquivo? [S/N]").upper()
@@ -92,7 +97,7 @@ class Monit(ZabbixAPI):
                with open(itemfile, 'a') as arquivo_csv:
                 escrever = csv.writer(arquivo_csv, delimiter=';')
                 escrever.writerow([x['hostid'],x['itemid'],x['key_'],x['name'],x['error']])
-     self.zapi.logout()
+     #self.zapi.logout()
 
   def procurando_groupusers(self):
     group_ids = input("Pesquise o nome do grupo de usuario: ")
@@ -106,10 +111,11 @@ class Monit(ZabbixAPI):
         print("***GroupsUsers encontrados***")
         print()
         for x in ids:
-            print (x['name'],"-", x['usrgrpid'])            
+            print (x['name'],"-", x['usrgrpid'])
+        print()            
     else:
         print("***GroupsUsers não encontrados***")
-  print()
+        print()
 
   def create_user(self, user, password):
     GROUPID = input("Insira o groupid...: ")
@@ -128,10 +134,13 @@ class Monit(ZabbixAPI):
        print(f'Falha ao cadastrar user {err}')
 
   def createUserfromCSV(self, fileName):
+     try:
       with open(fileName) as file:
          file_csv = csv.reader(file, delimiter=';')
          for [nome,senha] in file_csv:
-            self.create_user(user=nome,password=senha)
+            self.create_user(user=nome,password=senha)       
+     except Exception as err:
+        print("***ATENCAO***Para cadastro do Hosts obrigatório criar o arquivo users.csv")
   
   #def historyget(self, grupo):
   #  groupId = self.zapi.hostgroup.get({"output": "extend", "filter": {"name": grupo}})[0]['groupid']

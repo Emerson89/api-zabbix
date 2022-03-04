@@ -14,16 +14,15 @@ def menu():
   while True:
     print("---- Menu opções Hosts ----")
     print("[1] - Get hosts por grupo")
-    print("[2] - Get Itens não suportados")
+    print("[2] - Get Itens não suportados por grupo")
     print("[3] - Create users")
-    print("[4] - Create users")
     print("[5] - Exit")
 
     opcao = input("Select an option: ")
     print()
 
     if opcao == '1':
-     api.procura_groups()
+     api.get_hosts()
    
     elif opcao == '2':
      api.procura_itens()
@@ -37,7 +36,7 @@ def menu():
     
     elif opcao == '5':
         break
-    
+    print()
     if input('Deseja continuar a consulta? (S/N): ').upper() == 'N':
        break
 
