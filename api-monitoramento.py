@@ -20,7 +20,7 @@ def menu():
     print("[4] - Remove ou desabilita hosts com errors por grupo")
     print("[5] - Exit")
 
-    opcao = input("Select an option: ")
+    opcao = input("Selecione uma das opções: ")
     print()
 
     if opcao == '1':

@@ -160,7 +160,7 @@ class Monit(ZabbixAPI):
         print("HOSTID: {}, NOME: {}, ERROR: {}".format(x['hostid'],x['name'],x['error']))
      
       print()
-      print("Escolha uma opção:\n1 - Desabilitar host(s)?\n2 - Remover host(s)?")
+      print("Escolha uma das opções:\n1 - Desabilitar host(s)?\n2 - Remover host(s)?")
       opcao = input()
       if opcao == '1':
          for x in geral:
