@@ -7,7 +7,6 @@ import sys
 #URL = sys.argv[1]
 #USERNAME = sys.argv[2]
 #PASSWORD = getpass.getpass("Digite a senha: ")
-api = Monit("http://192.168.33.10","Admin","zabbix")
 
 #api = Monit(URL,USERNAME,PASSWORD)
 
@@ -18,7 +17,8 @@ def menu():
     print("[2] - Get Itens não suportados por grupo")
     print("[3] - Criar users")
     print("[4] - Remove ou desabilita hosts com errors por grupo")
-    print("[5] - Exit")
+    print("[5] - Get Itens últimos valores")
+    print("[6] - Exit")
 
     opcao = input("Selecione uma das opções: ")
     print()
@@ -37,6 +37,9 @@ def menu():
         api.get_hosts_errors()
     
     elif opcao == '5':
+       api.procura_itens_values()
+    
+    elif opcao == '6':
         break
     print()
     if input('Deseja continuar a consulta? (S/N): ').upper() == 'N':

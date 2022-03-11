@@ -25,7 +25,7 @@ class Monit(ZabbixAPI):
      for x in geral:
         print(x['name'])
      print()   
-     getgrupos = input("Digite o nome do grupo que deseja pesquisar: ")
+     getgrupos = input("Digite o nome do grupo: ")
      grupos = self.zapi.hostgroup.get({
         "output": 'extend',
         "filter": { "name": [getgrupos]},
@@ -101,6 +101,36 @@ class Monit(ZabbixAPI):
                })
      else:
         print("Não há itens não suportados para este grupo de hosts")
+     #self.zapi.logout()
+  
+  def procura_itens_values(self):
+     key = input("Digite a chave key do item para consulta - Ex: agent.version: ")
+     itens = self.zapi.item.get({
+            "output": "extend",
+            "search": {"key_":key},
+            "monitored": "true",
+            "groupids": [self.procura_groups(grupos='')],
+            "filter": {"state": 0}
+            })
+     
+     for x in itens:
+            print("HOSTID: {},ITEMID: {},KEY: {},NOME: {}, LASTVALUE: {}".format(x["hostid"],x["itemid"], x["key_"], x["name"], x["lastvalue"]))
+     if len(itens) > 0:
+      print()
+      print("Total de itens: ", len(itens))       
+      opcao = input("Deseja gerar relatorio em arquivo? [S/N]").upper()
+      if opcao == 'S':
+               itemfile = input("Digite o nome do arquivo: ") + ".csv"
+               with open(itemfile, 'w', newline='') as arquivo_csv:
+                  fieldnames = ['Hostid', 'ItemID', 'Key', 'Nome', 'LastValue']
+                  escrever = csv.DictWriter(arquivo_csv, delimiter=';', fieldnames=fieldnames)
+                  escrever.writeheader()
+               for x in itens:
+                  with open(itemfile, 'a') as arquivo_csv:
+                   escrever = csv.writer(arquivo_csv, delimiter=';')
+                   escrever.writerow([x['hostid'],x['itemid'],x['key_'],x['name'],x['lastvalue']])
+      else:
+        print(f"Não há itens chave key {key} para este grupo de hosts")
      #self.zapi.logout()
 
   def procurando_groupusers(self):
