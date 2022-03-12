@@ -24,18 +24,19 @@ class Monit(ZabbixAPI):
      print()
      for x in geral:
         print(x['name'])
-     print()   
-     getgrupos = input("Digite o nome do grupo: ")
-     grupos = self.zapi.hostgroup.get({
-        "output": 'extend',
+     print()
+     try:   
+      getgrupos = input("Digite o nome do grupo: ")
+      grupos = self.zapi.hostgroup.get({
+        "output": "extend",
         "filter": { "name": [getgrupos]},
         "selectHosts": ["name","host"],
         "monitored_hosts": "extend",
-     })[0]['groupid']
-     
+      })[0]['groupid']
+     except IndexError:
+        print()
+        print("***Não encontrado o nome deve ser exato ex: Zabbix servers***")
      print()
-     #print(f'***Hosts encontrados do Grupo {getgrupos}***')
-     #print()
      return grupos
 
   def get_hosts(self):       
@@ -48,7 +49,9 @@ class Monit(ZabbixAPI):
         "filter": { "status": [0]}
      })
      print()
-     print(ids)   
+     print("***Hosts encontrados***")
+     for x in ids:
+         print("HOSTID: {},NAME: {}".format(x["hostid"],x["name"]))
      print()
      opcao = input("Deseja gerar relatorio em arquivo? [S/N]").upper()
      if opcao == 'S':
@@ -64,8 +67,6 @@ class Monit(ZabbixAPI):
                          with open(namefile, 'a') as arquivo_csv:
                           escrever = csv.writer(arquivo_csv, delimiter=';')
                           escrever.writerow([x['hostid'],x['name'],grupos['name'],interface['ip'],template['name']])
-     #else:
-     #   print("***Hosts não encontrado***")
      #self.zapi.logout()
 
   def procura_itens(self):
@@ -100,7 +101,7 @@ class Monit(ZabbixAPI):
                   "status": 1
                })
      else:
-        print("Não há itens não suportados para este grupo de hosts")
+        print("***Não há itens não suportados para este grupo de hosts***")
      #self.zapi.logout()
   
   def procura_itens_values(self):
@@ -129,10 +130,45 @@ class Monit(ZabbixAPI):
                   with open(itemfile, 'a') as arquivo_csv:
                    escrever = csv.writer(arquivo_csv, delimiter=';')
                    escrever.writerow([x['hostid'],x['itemid'],x['key_'],x['name'],x['lastvalue']])
-      else:
+     else:
         print(f"Não há itens chave key {key} para este grupo de hosts")
      #self.zapi.logout()
-
+  
+  def procura_triggers(self):
+     triggers = self.zapi.trigger.get({
+            "output": "extend", 
+            "monitored": "true",
+            "groupids": [self.procura_groups(grupos='')],
+            "filter": {"state": 1}
+            })
+     
+     for x in triggers:
+            print("TRIGGERID: {},DESCRIPTION: {}, ERROR: {}".format(x["triggerid"], x["description"], x["error"]))
+     if len(triggers) > 0:
+      print()
+      print("Total de triggers não suportadas: ", len(triggers))
+      opcao = input("Deseja gerar relatorio em arquivo? [S/N]").upper()
+      if opcao == 'S':
+            itemfile = input("Digite o nome do arquivo: ") + ".csv"
+            with open(itemfile, 'w', newline='') as arquivo_csv:
+               fieldnames = ['Triggerid', 'Description', 'Error']
+               escrever = csv.DictWriter(arquivo_csv, delimiter=';', fieldnames=fieldnames)
+               escrever.writeheader()
+            for x in triggers:
+               with open(itemfile, 'a') as arquivo_csv:
+                escrever = csv.writer(arquivo_csv, delimiter=';')
+                escrever.writerow([x['triggerid'],x['description'],x['error']])
+      opcao = input("Deseja desabilitar as triggers? (S/N): ").upper()
+      if opcao == 'S':
+            for x in triggers:
+               self.zapi.trigger.update({
+                  "triggerid": x['triggerid'],
+                  "status": 1
+               })
+     else:
+        print("***Não há triggers não suportados para este grupo de hosts***")
+     #self.zapi.logout()
+     
   def procurando_groupusers(self):
     group_ids = input("Pesquise o nome do grupo de usuario: ")
     ids = self.zapi.usergroup.get({
@@ -140,12 +176,13 @@ class Monit(ZabbixAPI):
         "sortfield": "name",
         "search": {"name": '*' + group_ids + '*'},
         "searchWildcardsEnabled": True
-    })
+    })   
     if ids:
+        print()
         print("***GroupsUsers encontrados***")
         print()
         for x in ids:
-            print (x['name'],"-", x['usrgrpid'])
+            print ("NAME: {}, ID: {}".format(x['name'], x['usrgrpid']))
         print()            
     else:
         print("***Grupo(s) de Usuário(s) não encontrado(s)***")
@@ -190,7 +227,7 @@ class Monit(ZabbixAPI):
         print("HOSTID: {}, NOME: {}, ERROR: {}".format(x['hostid'],x['name'],x['error']))
      
       print()
-      print("Escolha uma das opções:\n1 - Desabilitar host(s)?\n2 - Remover host(s)?")
+      print("Escolha uma das opções:\n1 - Desabilitar host(s)?\n2 - Remover host(s)\n3 - Nenhuma(enter)?")
       opcao = input()
       if opcao == '1':
          for x in geral:

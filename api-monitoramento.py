@@ -4,21 +4,25 @@ from main import Monit
 import getpass
 import sys
 
-#URL = sys.argv[1]
-#USERNAME = sys.argv[2]
-#PASSWORD = getpass.getpass("Digite a senha: ")
+URL = sys.argv[1]
+USERNAME = sys.argv[2]
+PASSWORD = getpass.getpass("Digite a senha: ")
 
-#api = Monit(URL,USERNAME,PASSWORD)
+api = Monit(URL,USERNAME,PASSWORD)
+print()
 
 def menu():
   while True:
     print("---- Menu opções monitoramento ----")
-    print("[1] - Get hosts por grupo")
-    print("[2] - Get Itens não suportados por grupo")
+    print()
+    print("[1] - Consultar hosts por grupo")
+    print("[2] - Consultar itens não suportados por grupo")
     print("[3] - Criar users")
-    print("[4] - Remove ou desabilita hosts com errors por grupo")
-    print("[5] - Get Itens últimos valores")
-    print("[6] - Exit")
+    print("[4] - Remover ou desabilitar hosts com errors por grupo")
+    print("[5] - Consultar últimos valores itens por grupo")
+    print("[6] - Consultar triggers não suportados por grupo")
+    print("[7] - Exit")
+    print()
 
     opcao = input("Selecione uma das opções: ")
     print()
@@ -40,9 +44,12 @@ def menu():
        api.procura_itens_values()
     
     elif opcao == '6':
+       api.procura_triggers()
+       
+    elif opcao == '7':
         break
     print()
-    if input('Deseja continuar a consulta? (S/N): ').upper() == 'N':
+    if input('Deseja realizar uma nova consulta? (S/N): ').upper() == 'N':
        break
 
 menu()
