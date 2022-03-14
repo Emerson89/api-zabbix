@@ -75,7 +75,7 @@ class Monit(ZabbixAPI):
             "groupids": [self.procura_groups(grupos='')],
             "filter": {"state": 1}
             })
-     
+
      for x in itens:
             print("HOSTID: {},ITEMID: {},KEY: {},NOME: {},ERROR:{}".format(x["hostid"],x["itemid"], x["key_"], x["name"],x["error"]))
      if len(itens) > 0:
@@ -109,12 +109,16 @@ class Monit(ZabbixAPI):
             "output": "extend",
             "search": {"key_":key},
             "monitored": "true",
+            "selectHosts": "extend",
+            "selectInterfaces": "extend",
             "groupids": [self.procura_groups(grupos='')],
             "filter": {"state": 0}
             })
      
      for x in itens:
-            print("HOSTID: {},ITEMID: {},KEY: {},NOME: {}, LASTVALUE: {}".format(x["hostid"],x["itemid"], x["key_"], x["name"], x["lastvalue"]))
+        for names in x['hosts']:
+           for interface in x['interfaces']:
+            print("HOST: {}, INTERFACE: {}, ITEMID: {}, KEY: {}, NOME: {}, LASTVALUE: {}".format(names['host'],interface['ip'],x["itemid"], x["key_"], x["name"], x["lastvalue"]))
      if len(itens) > 0:
       print()
       print("Total de itens: ", len(itens))       
@@ -122,13 +126,15 @@ class Monit(ZabbixAPI):
       if opcao == 'S':
                itemfile = input("Digite o nome do arquivo: ") + ".csv"
                with open(itemfile, 'w', newline='') as arquivo_csv:
-                  fieldnames = ['Hostid', 'ItemID', 'Key', 'Nome', 'LastValue']
+                  fieldnames = ['Host', 'Interface', 'ItemID', 'Key', 'Nome', 'LastValue']
                   escrever = csv.DictWriter(arquivo_csv, delimiter=';', fieldnames=fieldnames)
                   escrever.writeheader()
                for x in itens:
-                  with open(itemfile, 'a') as arquivo_csv:
-                   escrever = csv.writer(arquivo_csv, delimiter=';')
-                   escrever.writerow([x['hostid'],x['itemid'],x['key_'],x['name'],x['lastvalue']])
+                  for names in x['hosts']:
+                    for interface in x['interfaces']:
+                     with open(itemfile, 'a') as arquivo_csv:
+                      escrever = csv.writer(arquivo_csv, delimiter=';')
+                      escrever.writerow([names['host'],interface['ip'],x['itemid'],x['key_'],x['name'],x['lastvalue']])
       else:
         print(f"Não há itens chave key {key} para este grupo de hosts")
      #self.zapi.logout()
