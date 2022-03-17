@@ -48,7 +48,6 @@ def menu():
        
     elif opcao == '7':
         break
-    print()
     if input('Deseja realizar uma nova consulta? (S/N): ').upper() == 'N':
        break
 

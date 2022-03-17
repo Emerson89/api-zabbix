@@ -36,7 +36,7 @@ class Monit(ZabbixAPI):
      except IndexError:
         print()
         print("***Não encontrado o nome deve ser exato ex: Zabbix servers***")
-     print()
+        print()
      return grupos
 
   def get_hosts(self):       
@@ -48,13 +48,14 @@ class Monit(ZabbixAPI):
         "groupids": [self.procura_groups(grupos='')],
         "filter": { "status": [0]}
      })
-     print()
-     print("***Hosts encontrados***")
+     if len(ids) > 0:
+      print("***Hosts encontrados***")
      for x in ids:
          print("HOSTID: {},NAME: {}".format(x["hostid"],x["name"]))
      print()
-     opcao = input("Deseja gerar relatorio em arquivo? [S/N]").upper()
-     if opcao == 'S':
+     if len(ids) > 0:
+      opcao = input("Deseja gerar relatorio em arquivo? [S/N]").upper()
+      if opcao == 'S':
             namefile = input("Digite o nome do arquivo: ") + ".csv"
             with open(namefile, 'w', newline='') as arquivo_csv:
                fieldnames = ['Hostid', 'Name', 'Grupo', 'Interfaces', 'Template']
@@ -100,7 +101,7 @@ class Monit(ZabbixAPI):
                   "itemid": x['itemid'],
                   "status": 1
                })
-     else:
+     elif len(itens) > 0:
         print("***Não há itens não suportados para este grupo de hosts***")
      #self.zapi.logout()
   
@@ -136,7 +137,8 @@ class Monit(ZabbixAPI):
                      with open(itemfile, 'a') as arquivo_csv:
                       escrever = csv.writer(arquivo_csv, delimiter=';')
                       escrever.writerow([names['host'],interface['ip'],x['itemid'],x['key_'],x['name'],x['lastvalue']])
-      else:
+     elif len(itens) > 0:
+        print()
         print(f"Não há itens chave key {key} para este grupo de hosts")
      #self.zapi.logout()
   
@@ -171,7 +173,8 @@ class Monit(ZabbixAPI):
                   "triggerid": x['triggerid'],
                   "status": 1
                })
-     else:
+     elif len(triggers) > 0:
+        print()
         print("***Não há triggers não suportados para este grupo de hosts***")
      #self.zapi.logout()
      
