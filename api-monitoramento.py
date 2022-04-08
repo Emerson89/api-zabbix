@@ -21,7 +21,8 @@ def menu():
     print("[4] - Remover ou desabilitar hosts com errors por grupo")
     print("[5] - Consultar últimos valores itens por grupo")
     print("[6] - Consultar triggers não suportados por grupo")
-    print("[7] - Exit")
+    print("[7] - Consultar triggers por grupo")
+    print("[8] - Exit")
     print()
 
     opcao = input("Selecione uma das opções: ")
@@ -45,8 +46,11 @@ def menu():
     
     elif opcao == '6':
        api.procura_triggers()
-       
+    
     elif opcao == '7':
+       api.get_triggers()
+       
+    elif opcao == '8':
         break
     if input('Deseja realizar uma nova consulta? (S/N): ').upper() == 'N':
        break

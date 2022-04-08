@@ -35,7 +35,7 @@ class Monit(ZabbixAPI):
       })[0]['groupid']
      except IndexError:
         print()
-        print("***Não encontrado o nome deve ser exato ex: Zabbix servers***")
+        print("***Nenhum grupo encontrado o nome deve ser exato ex: Zabbix servers***")
         print()
      return grupos
 
@@ -177,7 +177,44 @@ class Monit(ZabbixAPI):
         print()
         print("***Não há triggers não suportados para este grupo de hosts***")
      #self.zapi.logout()
-     
+
+  def get_triggers(self):
+     triggers = self.zapi.trigger.get({
+            "output": ['triggerid','expression','description','priority'], 
+            "monitored": "true",
+            "groupids": [self.procura_groups(grupos='')],
+            "filter": {"state": 0}
+            })
+     severidades = [
+         'Não classificada',
+         'Informação',
+         'Atenção',
+         'Média',
+         'Alta',
+         'Desastre'
+     ]
+     for x in triggers:
+           severidade = severidades[(int(x['priority']))]
+           print(x["triggerid"],'-',x['expression'],'-', x["description"],' - ' + severidade)
+     if len(triggers) > 0:
+      print()
+      print("Total de triggers: ", len(triggers))
+      opcao = input("Deseja gerar relatorio em arquivo? [S/N]").upper()
+      if opcao == 'S':
+            itemfile = input("Digite o nome do arquivo: ") + ".csv"
+            with open(itemfile, 'w', newline='') as arquivo_csv:
+               fieldnames = ['Triggerid', 'Expression', 'Description', 'Severidades']
+               escrever = csv.DictWriter(arquivo_csv, delimiter=';', fieldnames=fieldnames)
+               escrever.writeheader()
+            for x in triggers:
+               with open(itemfile, 'a') as arquivo_csv:
+                escrever = csv.writer(arquivo_csv, delimiter=';')
+                escrever.writerow([x['triggerid'],x['expression'],x['description'], severidade])
+     elif len(triggers) > 0:
+      print()
+      print("***Não há triggers para este grupo de hosts***")
+     #self.zapi.logout()
+
   def procurando_groupusers(self):
     group_ids = input("Pesquise o nome do grupo de usuario: ")
     ids = self.zapi.usergroup.get({
