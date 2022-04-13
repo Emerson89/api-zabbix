@@ -155,7 +155,18 @@ class Monit(ZabbixAPI):
      if len(triggers) > 0:
       print()
       print("Total de triggers não suportadas: ", len(triggers))
-      opcao = input("Deseja gerar relatorio em arquivo? [S/N]").upper()
+      opcao = input("Deseja gerar relatorio de macros em arquivo? [S/N]").upper()
+      if opcao == 'S':
+            itemfile = input("Digite o nome do arquivo: ") + ".csv"
+            for x in triggers:
+             with open(itemfile, 'a') as arquivo_csv:
+                errors = x['expression']
+                erro = errors.split('>')
+                macros = erro[1]
+                escrever = csv.writer(arquivo_csv)
+                new = macros.replace('"','')
+                escrever.writerow([new])
+      opcao = input("Deseja gerar relatorio em arquivo geral? [S/N]").upper()
       if opcao == 'S':
             itemfile = input("Digite o nome do arquivo: ") + ".csv"
             with open(itemfile, 'w', newline='') as arquivo_csv:

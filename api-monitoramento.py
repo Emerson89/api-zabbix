@@ -49,7 +49,7 @@ def menu():
     
     elif opcao == '7':
        api.get_triggers()
-       
+          
     elif opcao == '8':
         break
     if input('Deseja realizar uma nova consulta? (S/N): ').upper() == 'N':
