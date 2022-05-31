@@ -15,6 +15,7 @@ class Monit(ZabbixAPI):
   
    return zapi
 
+#Funcao procura grupo de hosts e armazena em variavel
   def procura_groups(self, grupos):
      geral = self.zapi.hostgroup.get({
         "output": ['name'],
@@ -104,7 +105,107 @@ class Monit(ZabbixAPI):
      elif len(itens) > 0:
         print("***Não há itens não suportados para este grupo de hosts***")
      #self.zapi.logout()
+
+  def procurando_groupusers(self):
+    group_ids = input("Pesquise o nome do grupo de usuario: ")
+    ids = self.zapi.usergroup.get({
+        "output": ['name','usrgrpid'],
+        "sortfield": "name",
+        "search": {"name": '*' + group_ids + '*'},
+        "searchWildcardsEnabled": True
+    })   
+    if ids:
+        print()
+        print("***GroupsUsers encontrados***")
+        print()
+        for x in ids:
+            print ("NAME: {}, ID: {}".format(x['name'], x['usrgrpid']))
+        print()            
+    else:
+        print("***Grupo(s) de Usuário(s) não encontrado(s)***")
+        print()
+
+  def create_user(self, user, password):
+    GROUPID = input("Insira o groupid...: ")
+    try:
+       create_user = self.zapi.user.create({
+           "alias": user,
+           "passwd": password,
+           "usrgrps": [{"usrgrpid":GROUPID}],
+       })
+       self.zapi.logout()
+
+       print(f'User cadastrado {user}')
+    except Already_Exists:
+       print(f'User(s) já cadastrado {user}')
+    except Exception as err:
+       print(f'Falha ao cadastrar user {err}')
+
+  def createUserfromCSV(self, fileName):
+     try:
+      with open(fileName) as file:
+         file_csv = csv.reader(file, delimiter=';')
+         for [nome,senha] in file_csv:
+            self.create_user(user=nome,password=senha)       
+     except Exception as err:
+        print("***ATENCAO***Para cadastro do Hosts obrigatório criar o arquivo users.csv")
+
+  def procura_macros_templates(self):
+     itens = self.zapi.template.get({
+            "output": "extend",
+            "selectMacros": "extend", 
+            "groupids": [self.procura_groups(grupos='')],
+            })
+     for x in itens:
+        for values in x['macros']:
+            print(values["macro"], values["value"])
+     if len(itens) > 0:
+      print()
+      print("Total de macros: ", len(itens))
+      opcao = input("Deseja gerar relatorio em arquivo? [S/N]").upper()
+      if opcao == 'S':
+            itemfile = input("Digite o nome do arquivo: ") + ".csv"
+            for x in itens:
+             for values in x['macros']:
+              with open(itemfile, 'a') as arquivo_csv:
+                errors = values['macro']
+                erro = errors.split('""')
+                macros = erro[0]
+                escrever = csv.writer(arquivo_csv, delimiter=';')
+                new = macros.replace('"','')
+                escrever.writerow([new,values['value']])
+     elif len(itens) > 0:
+        print("***Não há macros suportados para este grupo de hosts***")
+     self.zapi.logout()
   
+  def procura_macros_hosts(self):
+     itens = self.zapi.host.get({
+            "output": "extend",
+            "selectMacros": "extend", 
+            "groupids": [self.procura_groups(grupos='')],
+            })
+     for x in itens:
+        for values in x['macros']:
+            print(values["macro"], values["value"])
+     if len(itens) > 0:
+      print()
+      print("Total de macros: ",len(itens))
+      opcao = input("Deseja gerar relatorio em arquivo? [S/N]").upper()
+      if opcao == 'S':
+            itemfile = input("Digite o nome do arquivo: ") + ".csv"
+            for x in itens:
+             for values in x['macros']:
+              with open(itemfile, 'a') as arquivo_csv:
+                errors = values['macro']
+                erro = errors.split('""')
+                macros = erro[0]
+                escrever = csv.writer(arquivo_csv, delimiter=';')
+                new = macros.replace('"','')
+                escrever.writerow([new,values['value']])
+     elif len(itens) > 0:
+        print("***Não há macros não para este grupo de hosts***")
+     self.zapi.logout()
+
   def procura_itens_values(self):
      key = input("Digite a chave key do item para consulta - Ex: agent.version: ")
      itens = self.zapi.item.get({
@@ -225,50 +326,6 @@ class Monit(ZabbixAPI):
       print()
       print("***Não há triggers para este grupo de hosts***")
      #self.zapi.logout()
-
-  def procurando_groupusers(self):
-    group_ids = input("Pesquise o nome do grupo de usuario: ")
-    ids = self.zapi.usergroup.get({
-        "output": ['name','usrgrpid'],
-        "sortfield": "name",
-        "search": {"name": '*' + group_ids + '*'},
-        "searchWildcardsEnabled": True
-    })   
-    if ids:
-        print()
-        print("***GroupsUsers encontrados***")
-        print()
-        for x in ids:
-            print ("NAME: {}, ID: {}".format(x['name'], x['usrgrpid']))
-        print()            
-    else:
-        print("***Grupo(s) de Usuário(s) não encontrado(s)***")
-        print()
-
-  def create_user(self, user, password):
-    GROUPID = input("Insira o groupid...: ")
-    try:
-       create_user = self.zapi.user.create({
-           "alias": user,
-           "passwd": password,
-           "usrgrps": [{"usrgrpid":GROUPID}],
-       })
-       self.zapi.logout()
-
-       print(f'User cadastrado {user}')
-    except Already_Exists:
-       print(f'User(s) já cadastrado {user}')
-    except Exception as err:
-       print(f'Falha ao cadastrar user {err}')
-
-  def createUserfromCSV(self, fileName):
-     try:
-      with open(fileName) as file:
-         file_csv = csv.reader(file, delimiter=';')
-         for [nome,senha] in file_csv:
-            self.create_user(user=nome,password=senha)       
-     except Exception as err:
-        print("***ATENCAO***Para cadastro do Hosts obrigatório criar o arquivo users.csv")
   
   def get_hosts_errors(self):
      
@@ -301,3 +358,25 @@ class Monit(ZabbixAPI):
          print('Host(s) removido(s)')
      else:
         print("***Nenhum host(s) encontrado(s) com errors***")
+   
+  def create_macros(self, macros, values):
+   try:
+      create_macros = self.zapi.usermacro.create({
+        "hostid": "10620",
+        "macro": macros,
+        "value": values
+      })
+      
+      print(f'User cadastrado {macros}')
+   except Already_Exists:
+      print(f'User(s) já cadastrado {macros}')
+   except Exception as err:
+      print(f'Falha ao cadastrar user {err}')
+
+  def createmacrosfromCSV(self):
+
+    with open("macros.csv") as file:
+      file_csv = csv.reader(file, delimiter=';')
+      for [macross,valores] in file_csv:
+         self.create_macros(macros=macross,values=valores)       
+     
