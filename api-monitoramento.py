@@ -24,7 +24,8 @@ def menu():
     print("[7] - Consultar triggers por grupo")
     print("[8] - Consultar macros templates por grupo")
     print("[9] - Consultar macros hosts por grupo")
-    print("[10] - Exit")
+    print("[10] - Criar macros a nível de hosts")
+    print("[11] - Exit")
     print()
 
     opcao = input("Selecione uma das opções: ")
@@ -34,7 +35,7 @@ def menu():
      api.get_hosts()
    
     elif opcao == '2':
-     api.procura_itens()
+     api.procura_itens_error()
     
     elif opcao == '3':
        api.procurando_groupusers()
@@ -47,18 +48,21 @@ def menu():
        api.procura_itens_values()
     
     elif opcao == '6':
-       api.procura_triggers()
+       api.procura_triggers_error()
     
     elif opcao == '7':
-       api.get_triggers()
+       api.procura_triggers()
    
     elif opcao == '8':
        api.procura_macros_templates()
     
     elif opcao == '9':
        api.procura_macros_hosts()
-          
+    
     elif opcao == '10':
+       api.createmacrosfromCSV("macros.csv")
+          
+    elif opcao == '11':
         break
     if input('Deseja realizar uma nova consulta? (S/N): ').upper() == 'N':
        break

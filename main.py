@@ -28,6 +28,7 @@ class Monit(ZabbixAPI):
      print()
      try:   
       getgrupos = input("Digite o nome do grupo: ")
+      print()
       grupos = self.zapi.hostgroup.get({
         "output": "extend",
         "filter": { "name": [getgrupos]},
@@ -39,6 +40,50 @@ class Monit(ZabbixAPI):
         print("***Nenhum grupo encontrado o nome deve ser exato ex: Zabbix servers***")
         print()
      return grupos
+  
+  def procura_groups_full(self, gruposfull):
+     geral = self.zapi.hostgroup.get({
+        "output": ['name'],
+     })
+     print("***Grupo(s) de Host(s) encontrado(s)***")
+     print()
+     for x in geral:
+        print(x['name'])
+     print()
+     try:   
+      getgrupos = input("Digite o nome do grupo: ")
+      gruposfull = self.zapi.hostgroup.get({
+        "output": "extend",
+        "filter": { "name": [getgrupos]},
+      })[0]['groupid']
+     except IndexError:
+        print()
+        print("***Nenhum grupo encontrado o nome deve ser exato ex: Zabbix servers***")
+        print()
+     return gruposfull
+  
+  def procura_hostid(self, hostids):
+     geral = self.zapi.host.get({
+        "output": ['host'],
+     })
+     print("***Host(s) encontrado(s)***")
+     print()
+     for x in geral:
+        print(x['host'])
+     print()
+     try:   
+      gethosts = input("Digite o nome do host: ")
+      print()
+      hostids = self.zapi.host.get({
+        "output": "extend",
+        "filter": { "host": [gethosts]},
+        "selectHosts": ["hostid","host"],
+      })[0]['hostid']
+     except IndexError:
+        print()
+        print("***Nenhum host encontrado o nome deve ser exato ex: Zabbix Server***")
+        print()
+     return hostids
 
   def get_hosts(self):       
      ids = self.zapi.host.get({
@@ -51,6 +96,7 @@ class Monit(ZabbixAPI):
      })
      if len(ids) > 0:
       print("***Hosts encontrados***")
+      print()
      for x in ids:
          print("HOSTID: {},NAME: {}".format(x["hostid"],x["name"]))
      print()
@@ -69,9 +115,9 @@ class Monit(ZabbixAPI):
                          with open(namefile, 'a') as arquivo_csv:
                           escrever = csv.writer(arquivo_csv, delimiter=';')
                           escrever.writerow([x['hostid'],x['name'],grupos['name'],interface['ip'],template['name']])
-     #self.zapi.logout()
+     self.zapi.logout()
 
-  def procura_itens(self):
+  def procura_itens_error(self):
      itens = self.zapi.item.get({
             "output": "extend", 
             "monitored": "true",
@@ -104,7 +150,7 @@ class Monit(ZabbixAPI):
                })
      elif len(itens) > 0:
         print("***Não há itens não suportados para este grupo de hosts***")
-     #self.zapi.logout()
+     self.zapi.logout()
 
   def procurando_groupusers(self):
     group_ids = input("Pesquise o nome do grupo de usuario: ")
@@ -154,11 +200,11 @@ class Monit(ZabbixAPI):
      itens = self.zapi.template.get({
             "output": "extend",
             "selectMacros": "extend", 
-            "groupids": [self.procura_groups(grupos='')],
+            "groupids": [self.procura_groups_full(gruposfull='')],
             })
      for x in itens:
         for values in x['macros']:
-            print(values["macro"], values["value"])
+            print("MACRO: {}, VALUE: {}".format(values["macro"], values["value"]))
      if len(itens) > 0:
       print()
       print("Total de macros: ", len(itens))
@@ -186,7 +232,7 @@ class Monit(ZabbixAPI):
             })
      for x in itens:
         for values in x['macros']:
-            print(values["macro"], values["value"])
+            print("MACRO: {}, VALUE: {}".format(values["macro"], values["value"]))
      if len(itens) > 0:
       print()
       print("Total de macros: ",len(itens))
@@ -241,9 +287,9 @@ class Monit(ZabbixAPI):
      elif len(itens) > 0:
         print()
         print(f"Não há itens chave key {key} para este grupo de hosts")
-     #self.zapi.logout()
+     self.zapi.logout()
   
-  def procura_triggers(self):
+  def procura_triggers_error(self):
      triggers = self.zapi.trigger.get({
             "output": "extend", 
             "monitored": "true",
@@ -288,9 +334,9 @@ class Monit(ZabbixAPI):
      elif len(triggers) > 0:
         print()
         print("***Não há triggers não suportados para este grupo de hosts***")
-     #self.zapi.logout()
+     self.zapi.logout()
 
-  def get_triggers(self):
+  def procura_triggers(self):
      triggers = self.zapi.trigger.get({
             "output": ['triggerid','expression','description','priority'], 
             "monitored": "true",
@@ -325,7 +371,7 @@ class Monit(ZabbixAPI):
      elif len(triggers) > 0:
       print()
       print("***Não há triggers para este grupo de hosts***")
-     #self.zapi.logout()
+     self.zapi.logout()
   
   def get_hosts_errors(self):
      
@@ -335,7 +381,7 @@ class Monit(ZabbixAPI):
         "filter": { "available": [2]},
         "groupids": [self.procura_groups(grupos='')],
      })
-     if len(geral) > 0:  
+     if len(geral) > 0:
       print("***Host(s) encontrado(s) com error(s)***")
       for x in geral:
         print("HOSTID: {}, NOME: {}, ERROR: {}".format(x['hostid'],x['name'],x['error']))
@@ -362,21 +408,22 @@ class Monit(ZabbixAPI):
   def create_macros(self, macros, values):
    try:
       create_macros = self.zapi.usermacro.create({
-        "hostid": "10620",
+        "hostid": self.procura_hostid(hostids=''),
         "macro": macros,
         "value": values
       })
-      
-      print(f'User cadastrado {macros}')
+      print(f'User cadastrado {macros}-{values}')
    except Already_Exists:
-      print(f'User(s) já cadastrado {macros}')
+      print(f'User(s) já cadastrado {macros}-{values}')
    except Exception as err:
       print(f'Falha ao cadastrar user {err}')
-
-  def createmacrosfromCSV(self):
-
-    with open("macros.csv") as file:
+   self.zapi.logout()
+   
+  def createmacrosfromCSV(self, fileName):
+   try:
+     with open(fileName) as file:
       file_csv = csv.reader(file, delimiter=';')
       for [macross,valores] in file_csv:
          self.create_macros(macros=macross,values=valores) 
-     
+   except Exception as err:
+        print("***ATENCAO***Para cadastro de macros obrigatório criar o arquivo macros.csv")
