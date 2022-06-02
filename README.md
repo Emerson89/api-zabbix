@@ -14,6 +14,7 @@
 ./api-monitoramento.py http://IP-ZABBIX User
 ```
 Será solicitado a senha
+
 Podemos realizar a seguintes opções:
 ```
 ---- Menu opções monitoramento ----
