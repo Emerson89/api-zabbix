@@ -150,62 +150,6 @@ class Monit(ZabbixAPI):
      except Exception as err:
         print("***ATENCAO***Para cadastro do Hosts obrigatório criar o arquivo users.csv")
 
-  def procura_macros_templates(self):
-     itens = self.zapi.template.get({
-            "output": "extend",
-            "selectMacros": "extend", 
-            "groupids": [self.procura_groups(grupos='')],
-            })
-     for x in itens:
-        for values in x['macros']:
-            print(values["macro"], values["value"])
-     if len(itens) > 0:
-      print()
-      print("Total de macros: ", len(itens))
-      opcao = input("Deseja gerar relatorio em arquivo? [S/N]").upper()
-      if opcao == 'S':
-            itemfile = input("Digite o nome do arquivo: ") + ".csv"
-            for x in itens:
-             for values in x['macros']:
-              with open(itemfile, 'a') as arquivo_csv:
-                errors = values['macro']
-                erro = errors.split('""')
-                macros = erro[0]
-                escrever = csv.writer(arquivo_csv, delimiter=';')
-                new = macros.replace('"','')
-                escrever.writerow([new,values['value']])
-     elif len(itens) > 0:
-        print("***Não há macros suportados para este grupo de hosts***")
-     self.zapi.logout()
-  
-  def procura_macros_hosts(self):
-     itens = self.zapi.host.get({
-            "output": "extend",
-            "selectMacros": "extend", 
-            "groupids": [self.procura_groups(grupos='')],
-            })
-     for x in itens:
-        for values in x['macros']:
-            print(values["macro"], values["value"])
-     if len(itens) > 0:
-      print()
-      print("Total de macros: ",len(itens))
-      opcao = input("Deseja gerar relatorio em arquivo? [S/N]").upper()
-      if opcao == 'S':
-            itemfile = input("Digite o nome do arquivo: ") + ".csv"
-            for x in itens:
-             for values in x['macros']:
-              with open(itemfile, 'a') as arquivo_csv:
-                errors = values['macro']
-                erro = errors.split('""')
-                macros = erro[0]
-                escrever = csv.writer(arquivo_csv, delimiter=';')
-                new = macros.replace('"','')
-                escrever.writerow([new,values['value']])
-     elif len(itens) > 0:
-        print("***Não há macros não para este grupo de hosts***")
-     self.zapi.logout()
-
   def procura_itens_values(self):
      key = input("Digite a chave key do item para consulta - Ex: agent.version: ")
      itens = self.zapi.item.get({
