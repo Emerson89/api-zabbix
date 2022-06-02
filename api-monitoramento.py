@@ -17,15 +17,14 @@ def menu():
     print()
     print("[1] - Consultar hosts por grupo")
     print("[2] - Consultar itens não suportados por grupo")
-    print("[3] - Criar users")
-    print("[4] - Remover ou desabilitar hosts com errors por grupo")
+    print("[3] - Criar usuários")
+    print("[4] - Consultar, remover ou desabilitar hosts com errors por grupo")
     print("[5] - Consultar últimos valores itens por grupo")
     print("[6] - Consultar triggers não suportados por grupo")
     print("[7] - Consultar triggers por grupo")
     print("[8] - Consultar macros templates por grupo")
     print("[9] - Consultar macros hosts por grupo")
-    print("[10] - Criar macros em nivel hosts in DEV")
-    print("[11] - Exit")
+    print("[10] - Exit")
     print()
 
     opcao = input("Selecione uma das opções: ")
@@ -58,12 +57,8 @@ def menu():
     
     elif opcao == '9':
        api.procura_macros_hosts()
-    
-    elif opcao == '10':
-       api.create_macros()
-       api.createmacrosfromCSV()
           
-    elif opcao == '11':
+    elif opcao == '10':
         break
     if input('Deseja realizar uma nova consulta? (S/N): ').upper() == 'N':
        break

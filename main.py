@@ -358,25 +358,5 @@ class Monit(ZabbixAPI):
          print('Host(s) removido(s)')
      else:
         print("***Nenhum host(s) encontrado(s) com errors***")
-   
-  def create_macros(self, macros, values):
-   try:
-      create_macros = self.zapi.usermacro.create({
-        "hostid": "10620",
-        "macro": macros,
-        "value": values
-      })
-      
-      print(f'User cadastrado {macros}')
-   except Already_Exists:
-      print(f'User(s) já cadastrado {macros}')
-   except Exception as err:
-      print(f'Falha ao cadastrar user {err}')
-
-  def createmacrosfromCSV(self):
-
-    with open("macros.csv") as file:
-      file_csv = csv.reader(file, delimiter=';')
-      for [macross,valores] in file_csv:
-         self.create_macros(macros=macross,values=valores)       
+  
      
