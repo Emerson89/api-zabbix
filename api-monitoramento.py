@@ -24,7 +24,8 @@ def menu():
     print("[7] - Consultar triggers por grupo")
     print("[8] - Consultar macros templates por grupo")
     print("[9] - Consultar macros hosts por grupo")
-    print("[10] - Exit")
+    print("[10] - Criar macros a nivel de hosts")
+    print("[11] - Exit")
     print()
 
     opcao = input("Selecione uma das opções: ")
@@ -38,6 +39,7 @@ def menu():
     
     elif opcao == '3':
        api.procurando_groupusers()
+       api.id()
        api.createUserfromCSV("users.csv")
     
     elif opcao == '4':
@@ -57,8 +59,13 @@ def menu():
     
     elif opcao == '9':
        api.procura_macros_hosts()
-          
+    
     elif opcao == '10':
+       api.procura_host()
+       api.procura_id()
+       api.createUserfromCSV("macros.csv")
+          
+    elif opcao == '11':
         break
     if input('Deseja realizar uma nova consulta? (S/N): ').upper() == 'N':
        break

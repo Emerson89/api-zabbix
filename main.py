@@ -1,3 +1,4 @@
+from mimetypes import init
 from zabbix_api import ZabbixAPI,Already_Exists
 import csv
 
@@ -62,7 +63,7 @@ class Monit(ZabbixAPI):
         print()
      return gruposfull
   
-  def procura_hostid(self, hostids):
+  def procura_host(self):
      geral = self.zapi.host.get({
         "output": ['host'],
      })
@@ -71,10 +72,12 @@ class Monit(ZabbixAPI):
      for x in geral:
         print(x['host'])
      print()
+
+  def procura_id(self):   
      try:   
       gethosts = input("Digite o nome do host: ")
       print()
-      hostids = self.zapi.host.get({
+      self.hostids = self.zapi.host.get({
         "output": "extend",
         "filter": { "host": [gethosts]},
         "selectHosts": ["hostid","host"],
@@ -83,7 +86,6 @@ class Monit(ZabbixAPI):
         print()
         print("***Nenhum host encontrado o nome deve ser exato ex: Zabbix Server***")
         print()
-     return hostids
 
   def get_hosts(self):       
      ids = self.zapi.host.get({
@@ -115,7 +117,6 @@ class Monit(ZabbixAPI):
                          with open(namefile, 'a') as arquivo_csv:
                           escrever = csv.writer(arquivo_csv, delimiter=';')
                           escrever.writerow([x['hostid'],x['name'],grupos['name'],interface['ip'],template['name']])
-     self.zapi.logout()
 
   def procura_itens_error(self):
      itens = self.zapi.item.get({
@@ -169,16 +170,17 @@ class Monit(ZabbixAPI):
     else:
         print("***Grupo(s) de Usuário(s) não encontrado(s)***")
         print()
+  
+  def id(self):
+      self.a = input("Insira o groupid...: ")
 
   def create_user(self, user, password):
-    GROUPID = input("Insira o groupid...: ")
     try:
        create_user = self.zapi.user.create({
            "alias": user,
            "passwd": password,
-           "usrgrps": [{"usrgrpid":GROUPID}],
+           "usrgrps": [{"usrgrpid":self.a}],
        })
-       self.zapi.logout()
 
        print(f'User cadastrado {user}')
     except Already_Exists:
@@ -398,3 +400,26 @@ class Monit(ZabbixAPI):
          print('Host(s) removido(s)')
      else:
          print("***Nenhum host(s) encontrado(s) com errors***")
+   
+  def create_macros(self, macros, values):
+    try:
+       create_macros = self.zapi.usermacro.create({
+           "hostid": self.hostids,
+           "macro": macros,
+           "value": values
+       })
+
+       print(f'Macro cadastrado {macros}')
+    except Already_Exists:
+       print(f'Macro já cadastrado {macros}')
+    except Exception as err:
+       print(f'Falha ao cadastrar user {err}')
+
+  def createUserfromCSV(self, fileName):
+     try:
+      with open(fileName) as file:
+         file_csv = csv.reader(file, delimiter=';')
+         for [mcr,valores] in file_csv:
+            self.create_macros(macros=mcr,values=valores)       
+     except Exception as err:
+        print("***ATENCAO***Para cadastro de macros obrigatório criar o arquivo macros.csv")
