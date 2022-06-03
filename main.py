@@ -150,7 +150,6 @@ class Monit(ZabbixAPI):
                })
      elif len(itens) > 0:
         print("***Não há itens não suportados para este grupo de hosts***")
-     self.zapi.logout()
 
   def procurando_groupusers(self):
     group_ids = input("Pesquise o nome do grupo de usuario: ")
@@ -222,7 +221,6 @@ class Monit(ZabbixAPI):
                 escrever.writerow([new,values['value']])
      elif len(itens) > 0:
         print("***Não há macros suportados para este grupo de hosts***")
-     self.zapi.logout()
   
   def procura_macros_hosts(self):
      itens = self.zapi.host.get({
@@ -235,7 +233,7 @@ class Monit(ZabbixAPI):
             print("MACRO: {}, VALUE: {}".format(values["macro"], values["value"]))
      if len(itens) > 0:
       print()
-      print("Total de macros: ",len(itens))
+      #print("Total de macros: ",len(itens))
       opcao = input("Deseja gerar relatorio em arquivo? [S/N]").upper()
       if opcao == 'S':
             itemfile = input("Digite o nome do arquivo: ") + ".csv"
@@ -250,7 +248,6 @@ class Monit(ZabbixAPI):
                 escrever.writerow([new,values['value']])
      elif len(itens) > 0:
         print("***Não há macros não para este grupo de hosts***")
-     self.zapi.logout()
 
   def procura_itens_values(self):
      key = input("Digite a chave key do item para consulta - Ex: agent.version: ")
@@ -270,7 +267,7 @@ class Monit(ZabbixAPI):
             print("HOST: {}, INTERFACE: {}, ITEMID: {}, KEY: {}, NOME: {}, LASTVALUE: {}".format(names['host'],interface['ip'],x["itemid"], x["key_"], x["name"], x["lastvalue"]))
      if len(itens) > 0:
       print()
-      print("Total de itens: ", len(itens))       
+      #print("Total de itens: ", len(itens))       
       opcao = input("Deseja gerar relatorio em arquivo? [S/N]").upper()
       if opcao == 'S':
                itemfile = input("Digite o nome do arquivo: ") + ".csv"
@@ -287,7 +284,6 @@ class Monit(ZabbixAPI):
      elif len(itens) > 0:
         print()
         print(f"Não há itens chave key {key} para este grupo de hosts")
-     self.zapi.logout()
   
   def procura_triggers_error(self):
      triggers = self.zapi.trigger.get({
@@ -334,7 +330,6 @@ class Monit(ZabbixAPI):
      elif len(triggers) > 0:
         print()
         print("***Não há triggers não suportados para este grupo de hosts***")
-     self.zapi.logout()
 
   def procura_triggers(self):
      triggers = self.zapi.trigger.get({
@@ -371,7 +366,6 @@ class Monit(ZabbixAPI):
      elif len(triggers) > 0:
       print()
       print("***Não há triggers para este grupo de hosts***")
-     self.zapi.logout()
   
   def get_hosts_errors(self):
      
