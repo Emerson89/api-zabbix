@@ -33,7 +33,8 @@ Podemos realizar a seguintes opções:
 ```
 Para cadastro de usuários é obrigatório criar o arquivo users.csv seguindo abaixo, e criação de um grupo de usuário caso não for usar os padrões:
 
-*User1;Senha123* 
+*User1;Senha123*
+ 
 *User2;Senha123* 
 
 Para cadastro de macros é obrigatório criar o arquivo macros.csv seguindo abaixo, caso queira você extrair as usando o próprio script:
