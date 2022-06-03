@@ -22,7 +22,9 @@ def menu():
     print("[5] - Consultar últimos valores itens por grupo")
     print("[6] - Consultar triggers não suportados por grupo")
     print("[7] - Consultar triggers por grupo")
-    print("[8] - Exit")
+    print("[8] - Consultar macros templates por grupo")
+    print("[9] - Consultar macros hosts por grupo")
+    print("[10] - Exit")
     print()
 
     opcao = input("Selecione uma das opções: ")
@@ -48,9 +50,15 @@ def menu():
        api.procura_triggers_error()
     
     elif opcao == '7':
-       api.get_triggers()
-          
+       api.procura_triggers()
+    
     elif opcao == '8':
+       api.procura_macros_templates()
+    
+    elif opcao == '9':
+       api.procura_macros_hosts()
+          
+    elif opcao == '10':
         break
     if input('Deseja realizar uma nova consulta? (S/N): ').upper() == 'N':
        break
