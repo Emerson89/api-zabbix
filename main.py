@@ -196,8 +196,6 @@ class Monit(ZabbixAPI):
      except Exception as err:
         print("***ATENCAO***Para cadastro do Hosts obrigatório criar o arquivo users.csv")
 
-<<<<<<< HEAD
-=======
   def procura_macros_templates(self):
      itens = self.zapi.template.get({
             "output": "extend",
@@ -254,7 +252,6 @@ class Monit(ZabbixAPI):
         print("***Não há macros não para este grupo de hosts***")
      self.zapi.logout()
 
->>>>>>> dev
   def procura_itens_values(self):
      key = input("Digite a chave key do item para consulta - Ex: agent.version: ")
      itens = self.zapi.item.get({
@@ -406,27 +403,4 @@ class Monit(ZabbixAPI):
          
          print('Host(s) removido(s)')
      else:
-        print("***Nenhum host(s) encontrado(s) com errors***")
-  
-  def create_macros(self, macros, values):
-   try:
-      create_macros = self.zapi.usermacro.create({
-        "hostid": self.procura_hostid(hostids=''),
-        "macro": macros,
-        "value": values
-      })
-      print(f'User cadastrado {macros}-{values}')
-   except Already_Exists:
-      print(f'User(s) já cadastrado {macros}-{values}')
-   except Exception as err:
-      print(f'Falha ao cadastrar user {err}')
-   self.zapi.logout()
-   
-  def createmacrosfromCSV(self, fileName):
-   try:
-     with open(fileName) as file:
-      file_csv = csv.reader(file, delimiter=';')
-      for [macross,valores] in file_csv:
-         self.create_macros(macros=macross,values=valores) 
-   except Exception as err:
-        print("***ATENCAO***Para cadastro de macros obrigatório criar o arquivo macros.csv")
+         print("***Nenhum host(s) encontrado(s) com errors***")
