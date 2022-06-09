@@ -26,10 +26,11 @@ Podemos realizar a seguintes opções:
 [5] - Consultar últimos valores itens por grupo
 [6] - Consultar triggers não suportados por grupo
 [7] - Consultar triggers por grupo
-[8] - Consultar macros templates por grupo
-[9] - Consultar macros hosts por grupo
-[10] - Criar macros a nivel de hosts
-[11] - Exit
+[8] - Consultar triggers geral
+[9] - Consultar macros templates por grupo
+[10] - Consultar macros hosts por grupo
+[11] - Criar macros a nivel de hosts
+[12] - Exit
 ```
 Para cadastro de usuários é obrigatório criar o arquivo users.csv seguindo abaixo, e criação de um grupo de usuário caso não for usar os padrões:
 
