@@ -335,8 +335,9 @@ class Monit(ZabbixAPI):
 
   def procura_triggers(self):
      triggers = self.zapi.trigger.get({
-            "output": ['expression','description','priority'], 
+            "output": ['description','priority'], 
             "monitored": "true",
+            "selectHosts": ["hostid", "host"], 
             "groupids": [self.procura_groups(grupos='')],
             "filter": {"state": 0},
             "expandDescription": 'extend',
@@ -351,8 +352,9 @@ class Monit(ZabbixAPI):
          'Desastre'
      ]
      for x in triggers:
+        for v in x['hosts']:
            severidade = severidades[(int(x['priority']))]
-           print(x['expression'],'-', x["description"],' - ' + severidade)
+           print(v['host'],'-', x["description"],' - ' + severidade)
      if len(triggers) > 0:
       print()
       print("Total de triggers: ", len(triggers))
@@ -360,20 +362,22 @@ class Monit(ZabbixAPI):
       if opcao == 'S':
             itemfile = input("Digite o nome do arquivo: ") + ".csv"
             with open(itemfile, 'w', newline='') as arquivo_csv:
-               fieldnames = ['Expression', 'Description', 'Severidades']
+               fieldnames = ['Host', 'Description', 'Severidades']
                escrever = csv.DictWriter(arquivo_csv, delimiter=';', fieldnames=fieldnames)
                escrever.writeheader()
             for x in triggers:
+             for v in x['hosts']:
+               severidade = severidades[(int(x['priority']))]
                with open(itemfile, 'a') as arquivo_csv:
                 escrever = csv.writer(arquivo_csv, delimiter=';')
-                escrever.writerow([x['expression'],x['description'], severidade])
+                escrever.writerow([v['host'],x['description'], severidade])
      elif len(triggers) > 0:
       print()
       print("***Não há triggers para este grupo de hosts***")
   
   def procura_triggers_all(self):
      triggers = self.zapi.trigger.get({
-            "output": ['expression','description','priority'], 
+            "output": ['description','priority'], 
             "monitored": "true",
             "selectHosts": ["hostid", "host"], 
             "filter": {"state": 0},
@@ -391,7 +395,7 @@ class Monit(ZabbixAPI):
      for x in triggers:
         for v in x['hosts']:
            severidade = severidades[(int(x['priority']))]
-           print(v['host'],'-', x['expression'],'-', x["description"],' - ' + severidade)
+           print(v['host'],'-', x["description"],' - ' + severidade)
      if len(triggers) > 0:
       print()
       print("Total de triggers: ", len(triggers))
@@ -399,14 +403,15 @@ class Monit(ZabbixAPI):
       if opcao == 'S':
             itemfile = input("Digite o nome do arquivo: ") + ".csv"
             with open(itemfile, 'w', newline='') as arquivo_csv:
-               fieldnames = ['Host', 'Expression', 'Description', 'Severidades']
+               fieldnames = ['Host', 'Description', 'Severidades']
                escrever = csv.DictWriter(arquivo_csv, delimiter=';', fieldnames=fieldnames)
                escrever.writeheader()
             for x in triggers:
              for v in x['hosts']:
+               severidade = severidades[(int(x['priority']))]
                with open(itemfile, 'a') as arquivo_csv:
                 escrever = csv.writer(arquivo_csv, delimiter=';')
-                escrever.writerow([v['host'],x['expression'],x['description'], severidade])
+                escrever.writerow([v['host'],x['description'], severidade])
      elif len(triggers) > 0:
       print()
       print("***Não há triggers ***")
