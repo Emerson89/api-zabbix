@@ -1,4 +1,5 @@
 from mimetypes import init
+import datetime
 from zabbix_api import ZabbixAPI,Already_Exists
 import csv
 
@@ -470,3 +471,21 @@ class Monit(ZabbixAPI):
             self.create_macros(macros=mcr,values=valores)       
      except Exception as err:
         print("***ATENCAO***Para cadastro de macros obrigatório criar o arquivo macros.csv")
+  
+  ## Opcao 12
+  def procura_events(self):
+     datafrom = input("Digite uma data e hora inicial ex:'dd/mm/yyyy hh:mm': ")
+     datatill = input("Digite uma data e hora final ex:'dd/mm/yyyy hh:mm': ")
+     timefrom = int(datetime.datetime.strptime(datafrom, '%d/%m/%Y %H:%M').strftime("%s"))
+     timetill = int(datetime.datetime.strptime(datatill, '%d/%m/%Y %H:%M').strftime("%s"))
+
+     events = self.zapi.event.get({
+            "output": 'extend',
+            "time_from": timefrom,
+            "time_till": timetill, 
+            "sortfield": ["clock", "eventid"],
+            "sortorder": "desc"
+            })
+     print(events)
+ 
+   
