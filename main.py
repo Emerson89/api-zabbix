@@ -296,7 +296,7 @@ class Monit(ZabbixAPI):
             })
      
      for x in triggers:
-            print("TRIGGERID: {},DESCRIPTION: {}, ERROR: {}".format(x["triggerid"], x["description"], x["error"]))
+            print("DESCRIPTION: {}, ERROR: {}".format( x["description"], x["error"]))
      if len(triggers) > 0:
       print()
       print("Total de triggers não suportadas: ", len(triggers))
@@ -311,7 +311,31 @@ class Monit(ZabbixAPI):
                 escrever = csv.writer(arquivo_csv)
                 new = macros.replace('"','')
                 escrever.writerow([new])
-      opcao = input("Deseja gerar relatorio em arquivo geral? [S/N]").upper()
+      opcao = input("Deseja desabilitar as triggers? (S/N): ").upper()
+      if opcao == 'S':
+            for x in triggers:
+               self.zapi.trigger.update({
+                  "triggerid": x['triggerid'],
+                  "status": 1
+               })
+     elif len(triggers) > 0:
+        print()
+        print("***Não há triggers não suportados para este grupo de hosts***")
+  
+  def procura_triggers_error_2(self):
+     triggers = self.zapi.trigger.get({
+        "output": "extend", 
+        "monitored": "true",
+        "groupids": [self.procura_groups(grupos='')],
+        "filter": {"state": 1}
+        })
+     
+     for x in triggers:
+            print("DESCRIPTION: {}, ERROR: {}".format( x["description"], x["error"]))
+     if len(triggers) > 0:
+      print()
+      print("Total de triggers não suportadas: ", len(triggers))
+      opcao = input("Deseja gerar relatorio em arquivo? [S/N]").upper()
       if opcao == 'S':
             itemfile = input("Digite o nome do arquivo: ") + ".csv"
             with open(itemfile, 'w', newline='') as arquivo_csv:
@@ -332,7 +356,7 @@ class Monit(ZabbixAPI):
      elif len(triggers) > 0:
         print()
         print("***Não há triggers não suportados para este grupo de hosts***")
-
+        
   def procura_triggers(self):
      triggers = self.zapi.trigger.get({
             "output": ['description','priority'], 
