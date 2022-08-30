@@ -68,8 +68,11 @@ def menu():
        api.procura_host()
        api.procura_id()
        api.createUserfromCSV("macros.csv")
-          
+
     elif opcao == '12':
+       api.procura_events()
+
+    elif opcao == '13':
         break
     if input('Deseja realizar uma nova consulta? (S/N): ').upper() == 'N':
        break
