@@ -473,10 +473,7 @@ class Monit(ZabbixAPI):
      except Exception as err:
         print("***ATENCAO***Para cadastro de macros obrigatório criar o arquivo macros.csv")
   
-<<<<<<< HEAD
   ## Opcao 12
-=======
->>>>>>> 51d6942e6a050fd620f6393564ba32a87a6e7fff
   def procura_events(self):
      datafrom = input("Digite uma data e hora inicial ex:'dd/mm/yyyy hh:mm': ")
      datatill = input("Digite uma data e hora final ex:'dd/mm/yyyy hh:mm': ")
@@ -490,10 +487,5 @@ class Monit(ZabbixAPI):
             "sortfield": ["clock", "eventid"],
             "sortorder": "desc"
             })
-<<<<<<< HEAD
      print(events)
  
-   
-=======
-     print(events)
->>>>>>> 51d6942e6a050fd620f6393564ba32a87a6e7fff
